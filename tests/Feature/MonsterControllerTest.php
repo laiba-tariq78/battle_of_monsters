@@ -93,7 +93,7 @@ class MonsterControllerTest extends TestCase
         // @TODO implement
     }
 
-    public function test_should_fail_when_importing_csv_file_with_inexistent_columns()
+    public function test_should_fail_when_importing_csv_file_with_empty_monster()
     {
         // @TODO implement
     }
