@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Monster;
 use App\Services\MonsterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -28,6 +29,25 @@ class MonsterController extends Controller
         $this->monsterService = $monsterService;
     }
 
+    /**
+     * Create new monster.
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     *
+     */
+    public function index(): JsonResponse
+    {
+        $monsters = Monster::all();
+
+        return response()->json(
+            [
+                'data' => $this->$monsters
+            ],
+            Response::HTTP_OK
+        );
+    }
     /**
      * Create new monster.
      *
