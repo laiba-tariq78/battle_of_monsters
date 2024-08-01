@@ -18,6 +18,16 @@ class BattleControllerTest extends TestCase
         parent::setUp();
     }
 
+    public function test_should_get_all_battles_correctly()
+    {
+        $battle1 =Battle::factory()->create();
+        $battle2 =Battle::factory()->create();
+
+        $response = $this->getJson('api/battles')->assertStatus(Response::HTTP_OK)->json('data');
+
+        $this->assertEquals(2, count($response));
+    }
+
     public function test_should_create_a_battle_with_a_bad_request_response_if_one_parameter_is_null()
     {
         $response = $this->postJson('api/battles', [
