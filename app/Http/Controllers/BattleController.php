@@ -45,12 +45,10 @@ class BattleController extends Controller
      */
     public function index(): JsonResponse
     {
-        return response()->json(
-            [
-                'data' => $this->battleService->getAll()
-            ],
-            Response::HTTP_OK
-        );
+        $battles = Battle::all();
+        return response()->json([
+            'data' => $battles
+        ], Response::HTTP_OK);
     }
 
 

@@ -17,6 +17,7 @@ use App\Http\Controllers\BattleController;
 
 Route::controller(MonsterController::class)->prefix('monsters')->group(function () {
     Route::get('', 'index');
+    Route::get('{id}', 'getMonster');
     Route::post('', 'store');
     Route::put('{id}', 'update');
     Route::delete('{id}', 'remove');

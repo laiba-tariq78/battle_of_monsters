@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Battle;
 use App\Models\Monster;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Response;
@@ -20,8 +21,21 @@ class BattleControllerTest extends TestCase
 
     public function test_should_get_all_battles_correctly()
     {
-        $battle1 =Battle::factory()->create();
-        $battle2 =Battle::factory()->create();
+
+//        $monsterA = Monster::factory()->create();
+//        $monsterB = Monster::factory()->create();
+
+        $battleA = Battle::create([
+            'monsterA' => 1,
+            'monsterB' => 2,
+            'winner' =>  1
+        ]);
+        $battleB = Battle::create([
+            'monsterA' => 2,
+            'monsterB' => 3,
+            'winner' =>  2
+        ]);
+
 
         $response = $this->getJson('api/battles')->assertStatus(Response::HTTP_OK)->json('data');
 

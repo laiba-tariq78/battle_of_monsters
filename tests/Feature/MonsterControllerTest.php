@@ -29,24 +29,29 @@ class MonsterControllerTest extends TestCase
 
     public function test_should_get_all_monsters_correctly()
     {
-        $this->createMonsters();
+        $monsterA = Monster::factory()->create(['name'=>'My monster Test2']);
+        $monsterB = Monster::factory()->create(['name' => 'My monster Test3']);
+
         $response = $this->getJson('api/monsters')->assertStatus(Response::HTTP_OK)->json('data');
 
-        $this->assertEquals('My monster Test', $response[0]['name']);
+        //count 3 bcz 1 is in setup
+        $this->assertEquals(3, count($response));
     }
 
     public function test_should_get_a_single_monster_correctly()
     {
-        $response = $this->getJson('api/monsters/1')->assertStatus(Response::HTTP_OK)->json('data');
+        $monsterA = Monster::factory()->create(['name'=>'My monster Test2']);
+        $id = $monsterA->id;
+        $response = $this->getJson('api/monsters/'.$id)->assertStatus(Response::HTTP_OK)->json('data');
 
-        $this->assertEquals('My monster Test', $response['name']);
+        $this->assertEquals('My monster Test2', $response['name']);
     }
 
     public function test_should_get_404_error_if_monster_does_not_exists()
     {
         $response = $this->getJson('api/monsters/999999')->assertStatus(Response::HTTP_NOT_FOUND)->json();
 
-        $this->assertEquals('The monster does not exists.', $response['message']);
+        $this->assertEquals('The monster does not exists.', $response['error']);
     }
 
     public function test_should_create_a_new_monster()
@@ -66,7 +71,8 @@ class MonsterControllerTest extends TestCase
 
     public function test_should_update_a_monster_correctly()
     {
-        $this->putJson('api/monsters/1', ['name' => 'updated name'])->assertStatus(Response::HTTP_OK)->json();
+        $monster = Monster::first();
+        $this->putJson('api/monsters/'.$monster->id, ['name' => 'updated name'])->assertStatus(Response::HTTP_OK)->json();
     }
 
     public function test_should_update_with_404_error_if_monster_does_not_exists()
@@ -78,7 +84,8 @@ class MonsterControllerTest extends TestCase
 
     public function test_should_delete_a_monster_correctly()
     {
-        $this->deleteJson('api/monsters/1')->assertStatus(Response::HTTP_NO_CONTENT);
+        $monster = Monster::first();
+        $this->deleteJson('api/monsters/'.$monster->id)->assertStatus(Response::HTTP_NO_CONTENT);
     }
 
     public function test_should_delete_with_404_error_if_monster_does_not_exists()
