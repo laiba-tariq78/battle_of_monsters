@@ -37,4 +37,30 @@ class BattleService
         return $this->battleRepository->getAllBattles();
     }
 
+    public function startBattle(Monster $monster1, Monster $monster2): string
+    {
+        $monster1Turn = $monster1->speed > $monster2->speed || $monster1->attack > $monster2->attack;
+        $monster1HP = $monster1->hp;
+        $monster2HP = $monster2->hp;
+
+        while ($monster1HP > 0 && $monster2HP > 0) {
+            if ($monster1Turn) {
+                $damage = max($monster1->attack - $monster2->defense, 1);
+                $monster2HP -= $damage;
+                $monster1Turn = false;
+            } else {
+                $damage = max($monster2->attack - $monster1->defense, 1);
+                $monster1HP -= $damage;
+                $monster1Turn = true;
+            }
+        }
+
+        if ($monster1HP <= 0 && $monster2HP <= 0) {
+            return 'Draw';
+        }
+
+        return  $monster1HP > 0 ? $monster1->name . ' wins' : $monster2->name . ' wins';
+    }
+
+
 }

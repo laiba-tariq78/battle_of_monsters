@@ -90,4 +90,16 @@ class MonsterService
             Monster::create($inserted_data);
         }
     }
+
+    /**
+     * Retrieve a monster by its ID.
+     *
+     * @param int $id
+     * @return Monster|null
+     */
+    public function getMonsterById(int $id): ?Monster
+    {
+        return Monster::find($id);
+    }
+
 }

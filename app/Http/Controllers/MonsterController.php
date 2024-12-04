@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Monster;
 use App\Services\MonsterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -28,6 +29,44 @@ class MonsterController extends Controller
         $this->monsterService = $monsterService;
     }
 
+    /**
+     * Create new monster.
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     *
+     */
+    public function index(): JsonResponse
+    {
+        $monsters = Monster::all();
+
+        return response()->json(
+            [
+                'data' => $monsters
+            ],
+            Response::HTTP_OK
+        );
+    }
+
+    /**
+     * Retrieve a monster by its ID.
+     *
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function getMonster(int $id): JsonResponse
+    {
+        $monster = Monster::find($id);
+
+        if ($monster) {
+            return response()->json(['data' => $monster], Response::HTTP_OK);
+
+        }
+        return response()->json(['error' => 'The monster does not exists.'], Response::HTTP_NOT_FOUND);
+
+
+    }
     /**
      * Create new monster.
      *
@@ -66,18 +105,24 @@ class MonsterController extends Controller
     public function update(Request $request): JsonResponse
     {
         $monsterId = $request->route('id');
-        $newMonster = $request->only([
-            'name',
-            'attack',
-            'defense',
-            'hp',
-            'speed',
-            'imageUrl'
-        ]);
+        $monster = Monster::find($monsterId);
+        if($monster){
 
-        $result = $this->monsterService->getMonsterById($monsterId);
-        $this->monsterService->updateMonster($monsterId, $newMonster);
-        return response()->json('', Response::HTTP_OK);
+            $newMonster = $request->only([
+                'name',
+                'attack',
+                'defense',
+                'hp',
+                'speed',
+                'imageUrl'
+            ]);
+            $this->monsterService->updateMonster($monsterId, $newMonster);
+            return response()->json('', Response::HTTP_OK);
+
+        }
+
+        return response()->json(['message'=>'The monster does not exists.'], Response::HTTP_NOT_FOUND);
+
     }
 
     /**
@@ -92,8 +137,13 @@ class MonsterController extends Controller
     {
         $monsterId = $request->route('id');
         $result = $this->monsterService->getMonsterById($monsterId);
-        $this->monsterService->removeMonster($monsterId);
-        return response()->json('', Response::HTTP_NO_CONTENT);
+        if($result){
+            $this->monsterService->removeMonster($monsterId);
+            return response()->json('', Response::HTTP_NO_CONTENT);
+        }
+        return response()->json(['message'=>'The monster does not exists.'], Response::HTTP_NOT_FOUND);
+
+
     }
 
     public function importCsv(Request $request): JsonResponse
@@ -114,7 +164,7 @@ class MonsterController extends Controller
 
                 try {
                     $this->monsterService->importMonster($rowData, $csv_data);
-                    return response()->json(['data' => 'Records were imported successfully.'], Response::HTTP_OK);
+                    return response()->json(['message' => 'Records were imported successfully.'], Response::HTTP_OK);
                 } catch (QueryException $e) {
                     return response()->json(['message' => 'Incomplete data, check your file.'], Response::HTTP_BAD_REQUEST);
                 } catch (Exception $e) {
